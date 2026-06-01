@@ -1,3 +1,6 @@
+// Global Torus styles (same entry as advanced-authoring stories).
+import '../styles/index.scss';
+
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
   viewMode: 'docs',

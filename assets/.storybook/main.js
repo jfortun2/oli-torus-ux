@@ -17,11 +17,14 @@ module.exports = {
   webpackFinal: async (config) => {
     config.resolve.plugins = [...(config.resolve.plugins || []), new TsconfigPathsPlugin()];
 
-    const sassOptions = {
+    const stylesIncludePath = path.join(__dirname, '../styles');
+    const sassLoaderOptions = {
       sassOptions: {
-        includePaths: [path.join(__dirname, '../styles')],
+        includePaths: [stylesIncludePath],
         quietDeps: true,
       },
+      // Component-level .scss files (e.g. ObjectivesList.scss) use shared mixins from styles/common/
+      additionalData: `@import "common/mixins.scss";`,
     };
 
     config.module.rules = config.module.rules.map((oldRule) => {
@@ -33,7 +36,14 @@ module.exports = {
           if (oldUse.loader && oldUse.loader.indexOf('sass-loader') >= 0) {
             return {
               ...oldUse,
-              options: sassOptions,
+              options: {
+                ...oldUse.options,
+                ...sassLoaderOptions,
+                sassOptions: {
+                  ...oldUse.options?.sassOptions,
+                  ...sassLoaderOptions.sassOptions,
+                },
+              },
             };
           }
           return oldUse;
